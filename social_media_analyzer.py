@@ -1,35 +1,35 @@
-post1 = {
-    "title": "10 Tips for Effective Time Management",
-    "likes": 150,
-    "comments": 20,
-    "shares": 30,
-    "posting_time": "2024-06-01 10:00:00"
-}
-post2 = {
-    "title": "How to Stay Motivated While Working from Home",
-    "likes": 200,
-    "comments": 50,
-    "shares": 40,
-    "posting_time": "2024-06-02 14:00:00"
-}
-post3 = {
-    "title": "The Ultimate Guide to Healthy Eating",
-    "likes": 300,
-    "comments": 80,
-    "shares": 60,
-    "posting_time": "2024-06-03 18:00:00"
-}
+def load_posts(filename):
+    import pandas as pd
+    data = pd.read_csv(filename)
+    return data
 
-posts = [post1, post2, post3]
 
 def analyze_posts(posts):
-    for post in posts:
-        engagement = post["likes"] + post["comments"] + post["shares"]
-        print(f"Post: {post['title']}")
-        print(f"Engagement: {engagement}")
-        if engagement > 200:
-            print("This post is performing well!\n")
+    posts["engagement"] = ((posts["likes"] + posts["comments"] + posts["shares"]) / posts["views"]) * 100
+    statements = []
+    for i,row in posts.iterrows():
+        if row["engagement"]>8:
+            statements.append(f"High performing post: {row['title']} at {row['time']}")
         else:
-            print("This post could use some improvement.\n")
+            statements.append(f"Low performing post: {row['title']} at {row['time']}")
+    posts["performance"] = statements
+    return posts
 
-analyze_posts(posts)
+def best_posting_time(posts):
+    best_posting_time = []
+    for i,row in posts.iterrows():
+        if row["engagement"]> 8:
+            best_posting_time.append(f"Best posting time for '{row['title']}': {row['time']}")
+    print("\n".join(best_posting_time))
+
+def suggest_improvements(posts):
+    imporments = []
+    for i,row in posts.iterrows():
+        if row["engagement"] < 5:
+            imporments.append(f"Consider posting '{row['title']}' at a different time or improving content.")
+    print("\n".join(imporments))
+
+posts = load_posts("posts.csv")
+analyzed_posts = analyze_posts(posts)
+best_posting_time(analyzed_posts)
+suggest_improvements(analyzed_posts)
